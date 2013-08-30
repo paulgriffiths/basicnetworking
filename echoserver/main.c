@@ -35,6 +35,7 @@ int main(int argc, char ** argv) {
 
     exit_status = start_server(l_socket);
 
+    puts("Exiting from main...");
     return exit_status;
 }
 

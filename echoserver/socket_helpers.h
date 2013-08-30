@@ -13,9 +13,11 @@
 
 int wait_for_single_socket_input(const int l_socket, struct timeval timeout);
 ssize_t socket_readline(const int l_socket, char * buffer,
-        const size_t maxlen);
+        const size_t max_len);
+ssize_t socket_readline_timeout(const int l_socket, char * buffer,
+        const size_t max_len, struct timeval * time_out);
 ssize_t socket_writeline(const int l_socket, const char * buffer,
-        const size_t maxlen);
+        const size_t max_len);
 
 
 #endif          /*  PG_SOCKET_HELPERS_H  */

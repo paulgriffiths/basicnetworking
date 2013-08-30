@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <pthread.h>
 #include <inttypes.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -23,6 +24,70 @@
 
 
 static const int backlog = 1024;
+
+#ifdef DEBUG
+
+static ThreadCount thread_count = {PTHREAD_MUTEX_INITIALIZER, 0};
+
+int get_thread_count(void) {
+    int status;
+    int num_threads;
+
+    status = pthread_mutex_lock(&thread_count.mutex);
+    if ( status != 0 ) {
+        print_errno_message("Couldn't lock thread count mutex");
+        exit(EXIT_FAILURE);
+    }
+
+    num_threads = thread_count.count;
+
+    status = pthread_mutex_unlock(&thread_count.mutex);
+    if ( status != 0 ) {
+        print_errno_message("Couldn't lock thread count mutex");
+        exit(EXIT_FAILURE);
+    }
+
+    return num_threads;
+}
+
+
+void increment_thread_count(void) {
+    int status;
+
+    status = pthread_mutex_lock(&thread_count.mutex);
+    if ( status != 0 ) {
+        print_errno_message("Couldn't lock thread count mutex");
+        exit(EXIT_FAILURE);
+    }
+
+    ++thread_count.count;
+
+    status = pthread_mutex_unlock(&thread_count.mutex);
+    if ( status != 0 ) {
+        print_errno_message("Couldn't lock thread count mutex");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void decrement_thread_count(void) {
+    int status;
+
+    status = pthread_mutex_lock(&thread_count.mutex);
+    if ( status != 0 ) {
+        print_errno_message("Couldn't lock thread count mutex");
+        exit(EXIT_FAILURE);
+    }
+
+    --thread_count.count;
+
+    status = pthread_mutex_unlock(&thread_count.mutex);
+    if ( status != 0 ) {
+        print_errno_message("Couldn't lock thread count mutex");
+        exit(EXIT_FAILURE);
+    }
+}
+
+#endif
 
 uint16_t get_port_from_commandline(const int argc, char ** argv) {
     long port_value;
@@ -94,6 +159,9 @@ int start_server(const int listening_socket) {
     pthread_t thread_id;
 
     while ( 1 ) {
+        DFPRINTF ((stderr, "Number of active threads: %d\n",
+                    get_thread_count()));
+
         if ( (c_socket = accept(listening_socket, NULL, NULL)) == -1 ) {
             print_errno_message("Error accepting connection");
             return EXIT_FAILURE;
@@ -104,6 +172,7 @@ int start_server(const int listening_socket) {
             return EXIT_FAILURE;
         }
 
+        server_tag->c_socket = c_socket;
         status = pthread_create(&thread_id, NULL, echo_server, server_tag);
         if ( status != 0 ) {
             print_errno_message("Error creating thread");

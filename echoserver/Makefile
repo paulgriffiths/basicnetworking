@@ -46,11 +46,15 @@ default: debug
 # debug - builds objects with debugging info
 .PHONY: debug
 debug: CFLAGS+=$(C_DEBUG_FLAGS)
+debug: C_ISO_FLAGS+=$(C_DEBUG_FLAGS)
+debug: C_UNIX_FLAGS+=$(C_DEBUG_FLAGS)
 debug: main
 
 # release - builds with optimizations and without debugging info
 .PHONY: release
 release: CFLAGS+=$(C_RELEASE_FLAGS)
+release: C_ISO_FLAGS+=$(C_RELEASE_FLAGS)
+release: C_UNIX_FLAGS+=$(C_RELEASE_FLAGS)
 release: main
 
 # clean - removes ancilliary files from working directory
@@ -101,18 +105,18 @@ main.o: main.c server.h
 
 server.o: server.c server.h helper.h echo_server.h
 	@echo "Compiling $<..."
-	@$(CC) $(C_POSIX_FLAGS) -c -o $@ $<
+	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
 
 echo_server.o: echo_server.c echo_server.h echo_server.h helper.h \
 	socket_helpers.h
 	@echo "Compiling $<..."
-	@$(CC) $(C_POSIX_FLAGS) -c -o $@ $<
+	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
 
 helper.o: helper.c helper.h
 	@echo "Compiling $<..."
-	@$(CC) $(C_POSIX_FLAGS) -c -o $@ $<
+	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
 
 socket_helpers.o: socket_helpers.c socket_helpers.h
 	@echo "Compiling $<..."
-	@$(CC) $(C_POSIX_FLAGS) -c -o $@ $<
+	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
 

@@ -11,6 +11,18 @@
 #ifndef PG_ECHOSERVER_HELPER_H
 #define PG_ECHOSERVER_HELPER_H
 
+#ifdef DEBUG
+# define DPRINTF(arg) printf arg
+#else
+# define DPRINTF(arg)
+#endif
+
+#ifdef DEBUG
+# define DFPRINTF(arg) fprintf arg
+#else
+# define DFPRINTF(arg)
+#endif
+
 void print_errno_message(const char * message);
 
 #endif          /*  PG_ECHOSERVER_HELPER_H  */
