@@ -17,7 +17,9 @@
 #include "helper.h"
 
 
-/*  #define IPV6 to make an IPv6 listening socket.  */
+/*!
+ * \brief           Create an IPv6 rather than IPv4 listening socket.
+ */
 
 #define IPV6
 

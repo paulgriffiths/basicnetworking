@@ -21,7 +21,17 @@ void print_errno_message(const char * message);
 
 #ifdef DEBUG
 
+/*!
+ * \brief           Calls printf() only when DEBUG is defined.
+ */
+
 # define DPRINTF(arg) printf arg
+
+
+/*!
+ * \brief           Calls fprintf() only when DEBUG is defined.
+ */
+
 # define DFPRINTF(arg) fprintf arg
 
 #else

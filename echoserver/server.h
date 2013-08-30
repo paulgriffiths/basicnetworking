@@ -38,7 +38,18 @@ void increment_thread_count(void);
 void decrement_thread_count(void);
 int get_thread_count(void);
 
+
+/*!
+ * \brief           Calls increment_thread_count() only if DEBUG is defined.
+ */
+
 # define DINCREMENT_THREAD_COUNT(arg) increment_thread_count()
+
+
+/*!
+ * \brief           Calls decrement_thread_count() only if DEBUG is defined.
+ */
+
 # define DDECREMENT_THREAD_COUNT(arg) decrement_thread_count()
 
 #else

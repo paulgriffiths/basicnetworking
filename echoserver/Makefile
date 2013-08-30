@@ -18,7 +18,7 @@ CC=gcc
 
 # Compiler flags
 C_UNIX_FLAGS=-Wall -Wextra
-CFLAGS=$(C_UNIX_FLAGS) -ansi -pedantic
+CFLAGS=-ansi -pedantic $(C_UNIX_FLAGS)
 C_ISO_FLAGS=$(CFLAGS)
 C_DEBUG_FLAGS=-ggdb -DDEBUG -DDEBUG_ALL
 C_RELEASE_FLAGS=-O3 -DNDEBUG
@@ -101,16 +101,16 @@ main: $(OBJS)
 
 main.o: main.c server.h
 	@echo "Compiling $<..."
-	@$(CC) $(C_FLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -c -o $@ $<
 
 server.o: server.c server.h helper.h echo_server.h
 	@echo "Compiling $<..."
-	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -c -o $@ $<
 
 echo_server.o: echo_server.c echo_server.h server.h helper.h \
 	socket_helpers.h
 	@echo "Compiling $<..."
-	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -c -o $@ $<
 
 helper.o: helper.c helper.h
 	@echo "Compiling $<..."
@@ -118,5 +118,5 @@ helper.o: helper.c helper.h
 
 socket_helpers.o: socket_helpers.c socket_helpers.h
 	@echo "Compiling $<..."
-	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -c -o $@ $<
 

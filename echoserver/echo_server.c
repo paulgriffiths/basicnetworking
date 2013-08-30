@@ -18,6 +18,10 @@
 #include "socket_helpers.h"
 
 
+/*!
+ * \brief           Maximum character buffer size/
+ */
+
 #define MAX_BUFFER_LEN 1024
 
 
