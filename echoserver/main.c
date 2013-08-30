@@ -10,6 +10,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
+#include "server.h"
 
 
 /*!
@@ -18,7 +20,21 @@
  * \returns     Exit status.
  */
 
-int main(void) {
+int main(int argc, char ** argv) {
+    uint16_t l_port;
+    int l_socket;
+    int exit_status;
 
-    return EXIT_SUCCESS;
+    if ( (l_port = get_port_from_commandline(argc, argv)) == 0 ) {
+        return EXIT_FAILURE;
+    }
+
+    if ( (l_socket = create_server_socket(l_port)) == -1 ) {
+        return EXIT_FAILURE;
+    }
+
+    exit_status = start_server(l_socket);
+
+    return exit_status;
 }
+

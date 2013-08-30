@@ -24,10 +24,10 @@ C_DEBUG_FLAGS=-ggdb -DDEBUG -DDEBUG_ALL
 C_RELEASE_FLAGS=-O3 -DNDEBUG
 
 # Linker flags
-LDFLAGS=
+LDFLAGS=-lpthread
 
 # Object code files
-OBJS=main.o
+OBJS=main.o server.o echo_server.o socket_helpers.o helper.o
 
 # Source and clean files and globs
 SRCS=$(wildcard *.c *.h)
@@ -95,6 +95,24 @@ main: $(OBJS)
 
 # Object files for executable
 
-main.o: main.c
+main.o: main.c server.h
 	@echo "Compiling $<..."
-	@$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(C_FLAGS) -c -o $@ $<
+
+server.o: server.c server.h helper.h echo_server.h
+	@echo "Compiling $<..."
+	@$(CC) $(C_POSIX_FLAGS) -c -o $@ $<
+
+echo_server.o: echo_server.c echo_server.h echo_server.h helper.h \
+	socket_helpers.h
+	@echo "Compiling $<..."
+	@$(CC) $(C_POSIX_FLAGS) -c -o $@ $<
+
+helper.o: helper.c helper.h
+	@echo "Compiling $<..."
+	@$(CC) $(C_POSIX_FLAGS) -c -o $@ $<
+
+socket_helpers.o: socket_helpers.c socket_helpers.h
+	@echo "Compiling $<..."
+	@$(CC) $(C_POSIX_FLAGS) -c -o $@ $<
+
