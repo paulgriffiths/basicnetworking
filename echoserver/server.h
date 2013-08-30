@@ -1,7 +1,6 @@
 /*!
  * \file            server.h
  * \brief           Interface to listening server functions.
- * \details         Interface to listening server functions.
  * \author          Paul Griffiths
  * \copyright       Copyright 2013 Paul Griffiths. Distributed under the terms
  * of the GNU General Public License. <http://www.gnu.org/licenses/>
@@ -12,35 +11,41 @@
 #define PG_LISTENING_SERVER_H
 
 #include <inttypes.h>
-#include <pthread.h>
+
+
+/*!
+ * \brief           Struct for passing to server threads.
+ * \details         Contains a file descriptor for the connected socket,
+ * as the server obviously needs to know this.
+ */
+
+typedef struct ServerTag {
+    int c_socket;       /*!< File descriptor for the connected socket */
+} ServerTag;
+
+
+/*  Function prototypes  */
+
+int create_server_socket(const uint16_t listening_port);
+int start_server(const int listening_socket);
+
+
+/*  Debugging function prototypes and macros  */
 
 #ifdef DEBUG
-
-typedef struct ThreadCount {
-    pthread_mutex_t mutex;
-    int count;
-} ThreadCount;
 
 void increment_thread_count(void);
 void decrement_thread_count(void);
 int get_thread_count(void);
 
-#endif
-
-#ifdef DEBUG
 # define DINCREMENT_THREAD_COUNT(arg) increment_thread_count()
 # define DDECREMENT_THREAD_COUNT(arg) decrement_thread_count()
+
 #else
+
 # define DINCREMENT_THREAD_COUNT(arg)
 # define DDECREMENT_THREAD_COUNT(arg)
-#endif
 
-typedef struct ServerTag {
-    int c_socket;
-} ServerTag;
+#endif          /*  DEBUG  */
 
-uint16_t get_port_from_commandline(const int argc, char ** argv);
-int create_server_socket(const uint16_t listening_port);
-int start_server(const int listening_socket);
-
-#endif          /*  PG_ECHOSERVER_H  */
+#endif          /*  PG_LISTENING_SERVER_H  */

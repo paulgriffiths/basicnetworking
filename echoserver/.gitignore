@@ -1,6 +1,10 @@
 # Executables
 echoserver
 
+# Doxygen folders
+html
+latex
+
 # Compiled Object files
 *.slo
 *.lo

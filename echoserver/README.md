@@ -4,7 +4,7 @@ echoserver
 What is it?
 -----------
 
-**echoserver** is C project.
+**echoserver** is a basic TCP echo server, written for educational purposes.
 
 Who maintains it?
 -----------------
@@ -22,7 +22,10 @@ Up-to-date documentation can be found at
 
 Installation
 ------------
-**echoserver** is written in C.
+**echoserver** is written in C. Run `make` from the command line, and
+call `./echoserver NNNNN` where `NNNNN` is the TCP port on which to
+listen. The program outputs status messages to `stderr` when built
+with the `debug` target.
 
 Licensing
 ---------

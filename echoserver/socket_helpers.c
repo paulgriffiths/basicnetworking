@@ -16,30 +16,27 @@
 #include "socket_helpers.h"
 #include "helper.h"
 
-int wait_for_single_socket_input(const int l_socket, struct timeval timeout) {
-    fd_set socket_set;
-    int status;
 
-    FD_ZERO(&socket_set);
-    FD_SET(l_socket, &socket_set);
+/*!
+ * \brief           Reads a '\n' terminated line from a socket.
+ * \details         The function will not overwrite the buffer, so
+ * `max_len` should be the size of the whole buffer, and function will
+ * at most write `max_len - 1` characters plus the terminating `'\0'`.
+ * \param socket File description of the socket
+ * \param buffer The buffer into which to read
+ * \param max_len The maximum number of characters to read, including
+ * the terminating `'\0'`.
+ * \returns         The number of characters read, or -1 on encountering
+ * an error.
+ */
 
-    status = select(l_socket + 1, &socket_set, NULL, NULL, &timeout);
-    if ( status == -1 ) {
-        print_errno_message("Error calling select()");
-        exit(EXIT_FAILURE);
-    }
-
-    return status;
-}
-
-
-ssize_t socket_readline(const int l_socket, char * buffer,
+ssize_t socket_readline(const int socket, char * buffer,
         const size_t max_len) {
     size_t n;
     ssize_t num_read;
 
     for ( n = 0; n < (max_len - 1); ++n ) {
-        num_read = read(l_socket, &buffer[n], 1);
+        num_read = read(socket, &buffer[n], 1);
 
         if ( num_read == 1 ) {
             if ( buffer[n] == '\n' ) {
@@ -51,10 +48,9 @@ ssize_t socket_readline(const int l_socket, char * buffer,
             break;
         } else if ( errno == EINTR ) {
             continue;
-            break;
         } else {
             print_errno_message("Error reading from socket");
-            return 0;
+            return -1;
         }
     }
 
@@ -63,7 +59,26 @@ ssize_t socket_readline(const int l_socket, char * buffer,
 }
 
 
-ssize_t socket_readline_timeout(const int l_socket, char * buffer,
+/*!
+ * \brief           Reads a '\n' terminated line from a socket with timeout.
+ * \details         Behaves the same as socket_readline(), except it
+ * will time out if no input is available on the socket after the
+ * specified time.
+ * \param socket File description of the socket
+ * \param buffer The buffer into which to read
+ * \param max_len The maximum number of characters to read, including
+ * the terminating `'\0'`.
+ * \param time_out A pointer to a `timeval` struct containing the timeout
+ * period. Note that some implementations of `select()` may alter this
+ * variable, so the calling function should consider it unusable after
+ * return. In addition, on such an implementation, the value will
+ * specify the cumulative timeout period over the entire read line
+ * operation, rather than resetting after reading each character.
+ * \returns         The number of characters read, or -1 on encountering
+ * an error.
+ */
+
+ssize_t socket_readline_timeout(const int socket, char * buffer,
         const size_t max_len, struct timeval * time_out) {
     size_t n;
     ssize_t num_read;
@@ -71,10 +86,10 @@ ssize_t socket_readline_timeout(const int l_socket, char * buffer,
     int status;
 
     FD_ZERO(&socket_set);
-    FD_SET(l_socket, &socket_set);
+    FD_SET(socket, &socket_set);
 
     for ( n = 0; n < (max_len - 1); ++n ) {
-        status = select(l_socket + 1, &socket_set, NULL, NULL, time_out);
+        status = select(socket + 1, &socket_set, NULL, NULL, time_out);
         if ( status == -1 ) {
             print_errno_message("Error calling select()");
             exit(EXIT_FAILURE);
@@ -83,7 +98,7 @@ ssize_t socket_readline_timeout(const int l_socket, char * buffer,
             return -1;
         }
 
-        num_read = read(l_socket, &buffer[n], 1);
+        num_read = read(socket, &buffer[n], 1);
         if ( num_read == 1 ) {
             if ( buffer[n] == '\n' ) {
                 buffer[++n] = '\0';
@@ -105,21 +120,30 @@ ssize_t socket_readline_timeout(const int l_socket, char * buffer,
 }
 
 
-ssize_t socket_writeline(const int l_socket, const char * buffer,
+/*!
+ * \brief           Writes a line to a socket.
+ * \param socket File description of the socket
+ * \param buffer The buffer from which to write.
+ * \param max_len The maximum number of characters to read from the buffer.
+ * \returns         The number of characters written, or -1 on encountering
+ * an error.
+ */
+
+ssize_t socket_writeline(const int socket, const char * buffer,
         const size_t max_len) {
     size_t num_left = max_len;
     ssize_t num_written;
     const char * buf_ptr = buffer;
 
     while ( num_left > 0 ) {
-        num_written = write(l_socket, buf_ptr, num_left);
+        num_written = write(socket, buf_ptr, num_left);
 
         if ( num_written <= 0 ) {
             if ( errno == EINTR ) {
                 num_written = 0;
             } else {
                 print_errno_message("Error writing to socket");
-                return 0;
+                return -1;
             }
         }
 

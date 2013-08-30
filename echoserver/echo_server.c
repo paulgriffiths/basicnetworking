@@ -1,7 +1,6 @@
 /*!
  * \file            echo_server.c
  * \brief           Implementation of echo server functions.
- * \details         Implementation of echo server functions.
  * \author          Paul Griffiths
  * \copyright       Copyright 2013 Paul Griffiths. Distributed under the terms
  * of the GNU General Public License. <http://www.gnu.org/licenses/>
@@ -13,7 +12,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
-#include <assert.h>
 #include "server.h"
 #include "echo_server.h"
 #include "helper.h"
@@ -22,11 +20,25 @@
 
 #define MAX_BUFFER_LEN 1024
 
+
+/*!
+ * \brief           File scope variable for default time out seconds.
+ */
+
 static const long time_out_secs = 5;
+
+
+/*!
+ * \brief           File scope variable for default time out microseconds.
+ */
 static const long time_out_usecs = 0;
+
+
+/*!
+ * \brief           File scope variable for timeout message.
+ */
+
 static const char time_out_msg[] = "Timeout - closing connection.\n";
-static const char ready_msg[] = "Ready to get input.\n";
-static const char welcome_msg[] = "Ready to get input.\n";
 
 
 /*!
@@ -44,9 +56,13 @@ void * echo_server(void * arg) {
     char buffer[MAX_BUFFER_LEN];
     ServerTag * server_tag = arg;
     int c_socket = server_tag->c_socket;
-    free(server_tag);
     ssize_t num_read;
     struct timeval time_out;
+
+    /*  Free struct allocated by calling function before we do
+        anything that might cause us to exit()                   */
+
+    free(server_tag);
 
     DINCREMENT_THREAD_COUNT();
     DFPRINTF ((stderr, "Entering thread - number of active threads is %d.\n",
@@ -60,7 +76,7 @@ void * echo_server(void * arg) {
         exit(EXIT_FAILURE);
     }
 
-    /*  Loop and attempt to receive input lines  */
+    /*  Loop over input lines  */
 
     while ( 1 ) {
 

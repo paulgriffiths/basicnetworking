@@ -107,7 +107,7 @@ server.o: server.c server.h helper.h echo_server.h
 	@echo "Compiling $<..."
 	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
 
-echo_server.o: echo_server.c echo_server.h echo_server.h helper.h \
+echo_server.o: echo_server.c echo_server.h server.h helper.h \
 	socket_helpers.h
 	@echo "Compiling $<..."
 	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
