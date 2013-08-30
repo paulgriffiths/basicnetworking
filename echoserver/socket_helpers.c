@@ -18,14 +18,14 @@
 
 
 /*!
- * \brief           Reads a '\n' terminated line from a socket.
+ * \brief           Reads a \\n terminated line from a socket.
  * \details         The function will not overwrite the buffer, so
  * `max_len` should be the size of the whole buffer, and function will
- * at most write `max_len - 1` characters plus the terminating `'\0'`.
+ * at most write `max_len - 1` characters plus the terminating \\0.
  * \param socket File description of the socket
  * \param buffer The buffer into which to read
  * \param max_len The maximum number of characters to read, including
- * the terminating `'\0'`.
+ * the terminating \\0.
  * \returns         The number of characters read, or -1 on encountering
  * an error.
  */
@@ -60,14 +60,14 @@ ssize_t socket_readline(const int socket, char * buffer,
 
 
 /*!
- * \brief           Reads a '\n' terminated line from a socket with timeout.
+ * \brief           Reads a \\n terminated line from a socket with timeout.
  * \details         Behaves the same as socket_readline(), except it
  * will time out if no input is available on the socket after the
  * specified time.
  * \param socket File description of the socket
  * \param buffer The buffer into which to read
  * \param max_len The maximum number of characters to read, including
- * the terminating `'\0'`.
+ * the terminating \\0.
  * \param time_out A pointer to a `timeval` struct containing the timeout
  * period. Note that some implementations of `select()` may alter this
  * variable, so the calling function should consider it unusable after

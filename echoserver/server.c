@@ -33,7 +33,7 @@
 static const int backlog = 1024;
 
 
-/*
+/*!
  * \brief           Creates a listening socket.
  * \details         The function creates an IPv4 socket by default, but
  * creates an IPv6 socket if the IPV6 preprocessor macro is defined.

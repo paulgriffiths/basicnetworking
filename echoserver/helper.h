@@ -23,6 +23,7 @@ void print_errno_message(const char * message);
 
 /*!
  * \brief           Calls printf() only when DEBUG is defined.
+ * \param arg       The normal parameters to printf()
  */
 
 # define DPRINTF(arg) printf arg
@@ -30,6 +31,7 @@ void print_errno_message(const char * message);
 
 /*!
  * \brief           Calls fprintf() only when DEBUG is defined.
+ * \param arg       The normal parameters to fprintf()
  */
 
 # define DFPRINTF(arg) fprintf arg

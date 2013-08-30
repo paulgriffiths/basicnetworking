@@ -19,7 +19,7 @@
 
 
 /*!
- * \brief           Maximum character buffer size/
+ * \brief           Maximum character buffer size.
  */
 
 #define MAX_BUFFER_LEN 1024
