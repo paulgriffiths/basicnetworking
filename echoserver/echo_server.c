@@ -29,7 +29,7 @@
  * \brief           File scope variable for default time out seconds.
  */
 
-static const long time_out_secs = 5;
+static const long time_out_secs = 60;
 
 
 /*!
