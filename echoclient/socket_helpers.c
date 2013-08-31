@@ -128,9 +128,9 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
     FD_ZERO(&socket_set);
     FD_SET(socket, &socket_set);
 
-    /*  Attempt to read one character  */
+    /*  Fill buffer with 0, to avoid having to add terminating NUL  */
 
-    num_read = read(socket, &buffer[index], 1);
+    memset(buffer, 0, max_len);
 
     for ( index = 0; index < (max_len - 1); ++index ) {
 
