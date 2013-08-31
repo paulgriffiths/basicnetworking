@@ -42,9 +42,6 @@
  * \param buffer The buffer into which to read
  * \param max_len The maximum number of characters to read, including
  * the terminating \\0.
- * \param error_msg A pointer to a char pointer which may point to an
- * error message on failure. Set this to NULL to avoid setting an error
- * message.
  * \returns         The number of characters read, or -1 on encountering
  * an error.
  */
@@ -113,9 +110,6 @@ ssize_t socket_readline(const int socket, char * buffer, const size_t max_len) {
  * return. In addition, on such an implementation, the value will
  * specify the cumulative timeout period over the entire read line
  * operation, rather than resetting after reading each character.
- * \param error_msg A pointer to a char pointer which may point to an
- * error message on failure. Set this to NULL to avoid setting an error
- * message.
  * \returns         The number of characters read, or -1 on encountering
  * an error.
  */
@@ -200,9 +194,6 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
  * \param max_len The maximum number of characters to write to the buffer.
  * Due to the addition of CRLF, `max_len + 2` characters may actually
  * be written.
- * \param error_msg A pointer to a char pointer which may point to an
- * error message on failure. Set this to NULL to avoid setting an error
- * message.
  * \returns         The number of characters written, or -1 on encountering
  * an error.
  */
@@ -271,9 +262,6 @@ uint16_t port_from_string(const char * port_str) {
  * \brief           Creates a connected sock from a hostname and port.
  * \param host      A string containing the hostname to which to connect.
  * \param port      A string containing the port to which to connect.
- * \param error_msg A pointer to a char pointer which may point to an
- * error message on failure. Set this to NULL to avoid setting an error
- * message.
  * \returns         The file descriptor of the connected socket on success,
  * or -1 on failure.
  */
