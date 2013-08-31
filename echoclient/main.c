@@ -100,7 +100,7 @@ void run_echo_client(const int conn_socket) {
             break;
         }
 
-        printf("Echo response: %s", echo_buffer);
+        printf("Echo response: %s\n", echo_buffer);
     }
 }
 
