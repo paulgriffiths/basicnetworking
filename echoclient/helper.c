@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <errno.h>
 #include "helper.h"
 
@@ -75,4 +76,76 @@ void mk_errno_errmsg(const char * buffer, char ** error_msg) {
 
         strcpy(*error_msg, msg_buffer);
     }
+}
+
+
+/*!
+ * \brief           Trims CR and LF characters from the end of a string.
+ * \param buffer    The string to trim.
+ * \returns         A pointer to the passed buffer.
+ */
+
+char * trim_line_ending(char * buffer) {
+    if ( *buffer != '\0' ) {
+        int last;
+        for ( last = strlen(buffer) - 1;
+              last >= 0 && ( buffer[last] == '\n' || buffer[last] == '\r' );
+              --last ) {
+            buffer[last] = '\0';
+        }
+    }
+
+    return buffer;
+}
+
+
+/*!
+ * \brief           Trims trailing whitespace from a string.
+ * \param buffer    The string to trim.
+ * \returns         A pointer to the passed buffer.
+ */
+
+char * trim_right(char * buffer) {
+    if ( *buffer != '\0' ) {
+        int last;
+        for ( last = strlen(buffer) - 1;
+              last >= 0 && isspace(buffer[last]);
+              --last ) {
+            buffer[last] = '\0';
+        }
+    }
+
+    return buffer;
+}
+
+
+/*!
+ * \brief           Trims leading whitespace from a string.
+ * \param buffer    The string to trim.
+ * \returns         A pointer to the passed buffer.
+ */
+
+char * trim_left(char * buffer) {
+    char * leading = buffer;
+
+    while ( *leading != '\0' && isspace(*leading) ) {
+        ++leading;
+    }
+
+    strcpy(buffer, leading);
+
+    return buffer;
+}
+
+
+/*!
+ * \brief           Trims leading and trailing whitespace from a string
+ * \param buffer    The string to trim.
+ * \returns         A pointer to the passed buffer.
+ */
+
+char * trim(char * buffer) {
+    trim_left(buffer);
+    trim_right(buffer);
+    return buffer;
 }

@@ -12,11 +12,22 @@
 #define PG_HELPER_H
 
 
+/*!
+ * \brief           Generic function return failure code.
+ * \details         Provided for visibility when returning with error.
+ */
+
+#define ERROR_RETURN (-1)
+
+
 /*  Function prototypes  */
 
 void mk_errmsg(const char * buffer, char ** error_msg);
 void mk_errno_errmsg(const char * buffer, char ** error_msg);
-
+char * trim_line_ending(char * buffer);
+char * trim_right(char * buffer);
+char * trim_left(char * buffer);
+char * trim(char * buffer);
 
 /*  Debug macros  */
 

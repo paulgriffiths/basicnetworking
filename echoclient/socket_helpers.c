@@ -33,18 +33,11 @@
 
 
 /*!
- * \brief           Generic function return failure code.
- * \details         Provided for visibility when returning with error.
- */
-
-#define ERROR_RETURN (-1)
-
-
-/*!
  * \brief           Reads a \\n terminated line from a socket.
  * \details         The function will not overwrite the buffer, so
  * `max_len` should be the size of the whole buffer, and function will
  * at most write `max_len - 1` characters plus the terminating \\0.
+ * Any terminating CR or LF characters will be stripped.
  * \param socket File description of the socket
  * \param buffer The buffer into which to read
  * \param max_len The maximum number of characters to read, including
@@ -71,7 +64,9 @@ ssize_t socket_readline(const int socket, char * buffer,
 
             /*  Successfully read a character  */
 
-            if ( buffer[index] == '\n' ) {
+            if ( index > 0 &&
+                 buffer[index] == '\n' &&
+                 buffer[index - 1] == '\r' ) {
 
                 /*  End of line, so add terminating NUL and break  */
 
@@ -100,6 +95,8 @@ ssize_t socket_readline(const int socket, char * buffer,
         }
     }
 
+    trim_line_ending(buffer);
+
     return (ssize_t) index;
 }
 
@@ -108,7 +105,7 @@ ssize_t socket_readline(const int socket, char * buffer,
  * \brief           Reads a \\n terminated line from a socket with timeout.
  * \details         Behaves the same as socket_readline(), except it
  * will time out if no input is available on the socket after the
- * specified time.
+ * specified time. Any terminating CR or LF characters will be stripped.
  * \param socket File description of the socket
  * \param buffer The buffer into which to read
  * \param max_len The maximum number of characters to read, including
@@ -163,7 +160,9 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
 
             /*  Successfully read a character  */
 
-            if ( buffer[index] == '\n' ) {
+            if ( index > 0 &&
+                 buffer[index] == '\n' &&
+                 buffer[index - 1] == '\r' ) {
 
                 /*  End of line, so add terminating NUL and break  */
 
@@ -192,15 +191,22 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
         }
     }
 
+    trim_line_ending(buffer);
+
     return (ssize_t) index;
 }
 
 
 /*!
  * \brief           Writes a line to a socket.
+ * \details         The function adds a network-standard terminating
+ * CRLF, so the provided string should not normally end in any newline
+ * characters.
  * \param socket File description of the socket
  * \param buffer The buffer from which to write.
- * \param max_len The maximum number of characters to read from the buffer.
+ * \param max_len The maximum number of characters to write to the buffer.
+ * Due to the addition of CRLF, `max_len + 2` characters may actually
+ * be written.
  * \param error_msg A pointer to a char pointer which may point to an
  * error message on failure. Set this to NULL to avoid setting an error
  * message.
@@ -210,9 +216,22 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
 
 ssize_t socket_writeline(const int socket, const char * buffer,
         const size_t max_len, char ** error_msg) {
-    size_t num_left = max_len;
+    size_t num_left = max_len + 2;
     ssize_t num_written, total_written = 0;
-    const char * buf_ptr = buffer;
+    const char * buf_ptr;
+
+    /*  Allocate new buffer with enough room to add \r\n  */
+
+    char * eol_buf = malloc(strlen(buffer) + 3);
+    if ( eol_buf == NULL ) {
+        mk_errno_errmsg("Couldn't allocate memory", error_msg);
+        return ERROR_RETURN;
+    }
+
+    sprintf(eol_buf, "%s\r\n", buffer);
+    buf_ptr = eol_buf;
+
+    /*  Write characters  */
 
     while ( num_left > 0 ) {
         num_written = write(socket, buf_ptr, num_left);
