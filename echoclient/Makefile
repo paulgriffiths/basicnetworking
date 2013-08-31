@@ -27,7 +27,7 @@ C_RELEASE_FLAGS=-O3 -DNDEBUG
 LDFLAGS=
 
 # Object code files
-OBJS=main.o
+OBJS=main.o socket_helpers.o helper.o
 
 # Source and clean files and globs
 SRCS=$(wildcard *.c *.h)
@@ -45,7 +45,7 @@ default: debug
 
 # debug - builds objects with debugging info
 .PHONY: debug
-debug: CFLAGS+=$(C_DEBUG_FLAGS)
+debug: C_UNIX_FLAGS+=$(C_DEBUG_FLAGS)
 debug: main
 
 # release - builds with optimizations and without debugging info
@@ -95,6 +95,15 @@ main: $(OBJS)
 
 # Object files for executable
 
-main.o: main.c
+main.o: main.c socket_helpers.h
 	@echo "Compiling $<..."
-	@$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
+
+socket_helpers.o: socket_helpers.c socket_helpers.h helper.h
+	@echo "Compiling $<..."
+	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
+
+helper.o: helper.c helper.h
+	@echo "Compiling $<..."
+	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
+
