@@ -49,8 +49,7 @@
  * an error.
  */
 
-ssize_t socket_readline(const int socket, char * buffer,
-        const size_t max_len, char ** error_msg) {
+ssize_t socket_readline(const int socket, char * buffer, const size_t max_len) {
     size_t index;
     ssize_t num_read;
 
@@ -76,11 +75,10 @@ ssize_t socket_readline(const int socket, char * buffer,
         } else if ( num_read == 0 ) {
 
             /*  No characters read, but we haven't reached end
-                of line so add terminating NUL and return error  */
+                of line so add terminating NUL and break error  */
 
             buffer[index] = '\0';
-            mk_errmsg("No bytes to read", error_msg);
-            return ERROR_RETURN;
+            break;
         } else if ( errno == EINTR ) {
 
             /*  read() got interrupted by a signal, so try again  */
@@ -90,13 +88,12 @@ ssize_t socket_readline(const int socket, char * buffer,
 
             /*  Some other error, so set error message and return  */
 
-            mk_errno_errmsg("Error reading from socket", error_msg);
+            set_errno_errmsg("error reading from socket");
             return ERROR_RETURN;
         }
     }
 
     trim_line_ending(buffer);
-
     return (ssize_t) index;
 }
 
@@ -124,8 +121,7 @@ ssize_t socket_readline(const int socket, char * buffer,
  */
 
 ssize_t socket_readline_timeout(const int socket, char * buffer,
-        const size_t max_len, struct timeval * time_out,
-        char ** error_msg) {
+        const size_t max_len, struct timeval * time_out) {
     ssize_t num_read;
     size_t index;
     int status;
@@ -142,15 +138,14 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
 
         status = select(socket + 1, &socket_set, NULL, NULL, time_out);
         if ( status == -1 ) {
-            mk_errno_errmsg("Error calling select()", error_msg);
+            set_errno_errmsg("error calling select()");
             return ERROR_RETURN;
         } else if ( status == 0 ) {
 
             /*  No data ready after timeout period  */
 
             buffer[index] = '\0';
-            mk_errmsg("No bytes to read", error_msg);
-            return ERROR_RETURN;
+            break;
         }
 
         /*  Try to read a single character  */
@@ -172,11 +167,10 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
         } else if ( num_read == 0 ) {
 
             /*  No characters read, but we haven't reached end
-                of line so add terminating NUL and return error  */
+                of line so add terminating NUL and break        */
 
             buffer[index] = '\0';
-            mk_errmsg("No bytes to read", error_msg);
-            return ERROR_RETURN;
+            break;
         } else if ( errno == EINTR ) {
 
             /*  read() got interrupted by a signal, so try again  */
@@ -186,13 +180,12 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
             
             /*  Some other error, so set error message and return  */
 
-            mk_errno_errmsg("Error reading from socket", error_msg);
+            set_errno_errmsg("error reading from socket");
             return ERROR_RETURN;
         }
     }
 
     trim_line_ending(buffer);
-
     return (ssize_t) index;
 }
 
@@ -215,7 +208,7 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
  */
 
 ssize_t socket_writeline(const int socket, const char * buffer,
-        const size_t max_len, char ** error_msg) {
+        const size_t max_len) {
     size_t num_left = max_len + 2;
     ssize_t num_written, total_written = 0;
     const char * buf_ptr;
@@ -224,7 +217,7 @@ ssize_t socket_writeline(const int socket, const char * buffer,
 
     char * eol_buf = malloc(strlen(buffer) + 3);
     if ( eol_buf == NULL ) {
-        mk_errno_errmsg("Couldn't allocate memory", error_msg);
+        set_errno_errmsg("couldn't allocate memory");
         return ERROR_RETURN;
     }
 
@@ -240,7 +233,7 @@ ssize_t socket_writeline(const int socket, const char * buffer,
             if ( errno == EINTR ) {
                 num_written = 0;
             } else {
-                mk_errno_errmsg("Error writing to socket", error_msg);
+                set_errno_errmsg("error writing to socket");
                 return ERROR_RETURN;
             }
         }
@@ -285,8 +278,7 @@ uint16_t port_from_string(const char * port_str) {
  * or -1 on failure.
  */
 
-int conn_socket_from_string(const char * host, const char * port,
-                            char ** error_msg) {
+int conn_socket_from_string(const char * host, const char * port) {
     struct addrinfo *result_info, *cri;
     struct addrinfo hints;
     int status, c_sock, connected = 0;
@@ -304,7 +296,7 @@ int conn_socket_from_string(const char * host, const char * port,
     status = getaddrinfo(host, port, &hints, &result_info);
     if ( status != 0 ) {
         if ( status == EAI_SYSTEM ) {
-            mk_errno_errmsg("Error getting address info.", error_msg);
+            set_errno_errmsg("error getting address info");
         } else {
 
             /*  All other getaddrinfo() errors obtainable
@@ -312,9 +304,9 @@ int conn_socket_from_string(const char * host, const char * port,
 
             char buffer[MAX_BUFFER_SIZE];
             snprintf(buffer, sizeof(buffer),
-                    "Error getting address info: %d (%s)",
+                    "error getting address info: %d (%s)",
                     status, gai_strerror(status));
-            mk_errmsg(buffer, error_msg);
+            set_errmsg(buffer);
         }
         return ERROR_RETURN;
     }
@@ -327,7 +319,7 @@ int conn_socket_from_string(const char * host, const char * port,
         if ( (c_sock = socket(s_addr->sa_family, SOCK_STREAM, 0)) != -1 ) {
             if ( connect(c_sock, s_addr, cri->ai_addrlen) == -1) {
                 if ( close(c_sock) == -1 ) {
-                    mk_errno_errmsg("Couldn't close socket", error_msg);
+                    set_errno_errmsg("couldn't close socket");
                     return ERROR_RETURN;
                 }
                 c_sock = ERROR_RETURN;
@@ -344,7 +336,7 @@ int conn_socket_from_string(const char * host, const char * port,
     /*  Set an error message if we couldn't connect to anything  */
 
     if ( c_sock == ERROR_RETURN ) {
-        mk_errmsg("Unable to connect to service", error_msg);
+        set_errmsg("unable to connect to service");
     }
 
     return c_sock;

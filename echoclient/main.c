@@ -31,7 +31,7 @@
 
 /*  Function prototypes  */
 
-void run_echo_client(const int conn_socket);
+void run_echo_client(const int c_sock);
 int connect_with_command_line_args(int argc, char ** argv);
 
 
@@ -42,19 +42,20 @@ int connect_with_command_line_args(int argc, char ** argv);
  */
 
 int main(int argc, char ** argv) {
-    int conn_socket;
+    int c_sock;
 
     ignore_sigpipe();
 
-    if ( (conn_socket = connect_with_command_line_args(argc, argv)) == -1 ) {
+    if ( (c_sock = connect_with_command_line_args(argc, argv)) == -1 ) {
         return EXIT_FAILURE;
     }
 
-    run_echo_client(conn_socket);
+    run_echo_client(c_sock);
 
-    if ( close(conn_socket) == -1 ) {
-        fprintf(stderr, "Error closing socket.\n");
-        exit(EXIT_FAILURE);
+    if ( close(c_sock) == -1 ) {
+        set_errmsg("error closing socket");
+        fprintf(stderr, "echoclient: %s\n", get_errmsg());
+        return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;
@@ -63,44 +64,43 @@ int main(int argc, char ** argv) {
 
 /*!
  * \brief           Runs the echo client.
- * \param conn_socket File descriptor of the connected socket to use.
+ * \param c_sock    File descriptor of the connected socket to use.
  */
 
-void run_echo_client(const int conn_socket) {
-    char buffer[MAX_BUFFER_LEN];
-    char echo_buffer[MAX_BUFFER_LEN];
-    char * error_msg;
+void run_echo_client(const int c_sock) {
+    char input_buf[MAX_BUFFER_LEN];
+    char echo_buf[MAX_BUFFER_LEN];
     int num_bytes;
 
-    while ( 1 ) {
+    while ( TRUE ) {
         printf("Enter the string to echo ('q' to quit): ");
         fflush(stdout);
 
-        if ( fgets(buffer, MAX_BUFFER_LEN, stdin) == NULL ||
-             strcmp(buffer, "q\n") == 0 ||
-             strcmp(buffer, "Q\n") == 0 ) {
+        if ( fgets(input_buf, MAX_BUFFER_LEN, stdin) == NULL ||
+             strcmp(input_buf, "q\n") == 0 ||
+             strcmp(input_buf, "Q\n") == 0 ) {
             break;
         }
 
-        num_bytes = socket_writeline(conn_socket, buffer,
-                strlen(buffer), &error_msg);
+        num_bytes = socket_writeline(c_sock, input_buf, strlen(input_buf));
         if ( num_bytes == 0 ) {
-            fprintf(stderr, "No bytes could be written.\n");
+            fprintf(stderr, "echoclient: no bytes could be written.\n");
             break;
         } else if ( num_bytes < 0 ) {
-            fprintf(stderr, "%s\n", error_msg);
-            free(error_msg);
+            fprintf(stderr, "echoclient: %s\n", get_errmsg());
             break;
         }
 
-        if ( socket_readline(conn_socket, echo_buffer,
-                sizeof(echo_buffer), &error_msg) < 0 ) {
-            fprintf(stderr, "%s\n", error_msg);
-            free(error_msg);
+        num_bytes = socket_readline(c_sock, echo_buf, sizeof(echo_buf));
+        if ( num_bytes == 0 ) {
+            fprintf(stderr, "echoclient: no bytes could be read.\n");
+            break;
+        } else if ( num_bytes < 0 ) {
+            fprintf(stderr, "echoclient: %s\n", get_errmsg());
             break;
         }
 
-        printf("Echo response: %s\n", echo_buffer);
+        printf("Echo response: %s\n", echo_buf);
     }
 }
 
@@ -117,32 +117,29 @@ void run_echo_client(const int conn_socket) {
 
 int connect_with_command_line_args(int argc, char ** argv) {
     uint16_t port;
-    int conn_socket;
-    char * error_msg;
+    int c_sock;
 
     /*  Check for correct number of command line arguments  */
 
     if ( argc != 3 ) {
-        fprintf(stderr, "Usage: %s [IP/Hostname] [port]\n", argv[0]);
-        return -1;
+        fprintf(stdout, "Usage: echoclient [IP/Hostname] [port]\n");
+        return ERROR_RETURN;
     }
 
     /*  Check valid port  */
 
     if ( (port = port_from_string(argv[2])) == 0 ) {
-        fprintf(stderr, "Usage: %s [IP/Hostname] [port]\n", argv[0]);
-        fprintf(stderr, "Invalid port specified.\n");
-        return -1;
+        fprintf(stdout, "Usage: echoclient [IP/Hostname] [port]\n");
+        fprintf(stdout, "Invalid port specified.\n");
+        return ERROR_RETURN;
     }
 
     /*  Try to connect to service  */
 
-    if ( (conn_socket = conn_socket_from_string(argv[1], argv[2],
-                                                &error_msg)) == -1 ) {
-        fprintf(stderr, "%s\n", error_msg);
-        free(error_msg);
-        return -1;
+    if ( (c_sock = conn_socket_from_string(argv[1], argv[2])) == -1 ) {
+        fprintf(stderr, "echoclient: %s\n", get_errmsg());
+        return ERROR_RETURN;
     }
 
-    return conn_socket;
+    return c_sock;
 }

@@ -23,7 +23,50 @@
 
 
 /*!
- * \brief           Sets an error message.
+ * \brief           Global error message string.
+ */
+
+static char helper_error_msg[MAX_BUFFER_SIZE] = {0};
+
+
+/*!
+ * \brief           Gets the global error message.
+ * \returns         A pointer to the global error message.
+ */
+
+char * get_errmsg(void) {
+    return helper_error_msg;
+}
+
+
+/*!
+ * \brief           Sets the global error message.
+ * \details         Uses a statically allocated buffer, so this is not
+ * thread-safe.
+ * \param buffer    A buffer containing the error message.
+ */
+
+void set_errmsg(const char * buffer) {
+    snprintf(helper_error_msg, MAX_BUFFER_SIZE - 1,
+             "%s", buffer);
+}
+
+
+/*!
+ * \brief           Sets the global error message based on errno.
+ * \details         Uses a statically allocated buffer, so this is not
+ * thread-safe.
+ * \param buffer    A buffer containing the error message.
+ */
+
+void set_errno_errmsg(const char * buffer) {
+    snprintf(helper_error_msg, MAX_BUFFER_SIZE - 1, "%s [(%d) %s]",
+             buffer, errno, strerror(errno));
+}
+
+
+/*!
+ * \brief           Makes an error message.
  * \details         This function provides a thread-safe way for a
  * function to set an error message.
  * \param buffer    A buffer containing the error message.
@@ -47,7 +90,7 @@ void mk_errmsg(const char * buffer, char ** error_msg) {
 
 
 /*!
- * \brief           Sets an error message based on errno.
+ * \brief           Makes an error message based on errno.
  * \details         This function provides a thread-safe way for a
  * function to set an error message, with the usual caveat that
  * errno itself is not threadsafe.

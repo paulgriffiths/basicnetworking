@@ -13,6 +13,20 @@
 
 
 /*!
+ * \brief           TRUE identifier
+ */
+
+#define TRUE 1
+
+
+/*!
+ * \brief           FALSE identifier
+ */
+
+#define FALSE 0
+
+
+/*!
  * \brief           Generic function return failure code.
  * \details         Provided for visibility when returning with error.
  */
@@ -22,6 +36,9 @@
 
 /*  Function prototypes  */
 
+char * get_errmsg(void);
+void set_errmsg(const char * buffer);
+void set_errno_errmsg(const char * buffer);
 void mk_errmsg(const char * buffer, char ** error_msg);
 void mk_errno_errmsg(const char * buffer, char ** error_msg);
 char * trim_line_ending(char * buffer);
