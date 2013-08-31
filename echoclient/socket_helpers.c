@@ -211,7 +211,7 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
 ssize_t socket_writeline(const int socket, const char * buffer,
         const size_t max_len, char ** error_msg) {
     size_t num_left = max_len;
-    ssize_t num_written;
+    ssize_t num_written, total_written = 0;
     const char * buf_ptr = buffer;
 
     while ( num_left > 0 ) {
@@ -228,9 +228,10 @@ ssize_t socket_writeline(const int socket, const char * buffer,
 
         num_left -= num_written;
         buf_ptr += num_written;
+        total_written += num_written;
     }
 
-    return num_written;
+    return total_written;
 }
 
 
