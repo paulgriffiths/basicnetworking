@@ -8,14 +8,26 @@
  */
 
 
-#ifndef PG_ECHOSERVER_HELPER_H
-#define PG_ECHOSERVER_HELPER_H
+#ifndef PG_HELPER_H
+#define PG_HELPER_H
+
+
+/*!
+ * \brief           Generic function return failure code.
+ * \details         Provided for visibility when returning with error.
+ */
+
+#define ERROR_RETURN (-1)
 
 
 /*  Function prototypes  */
 
-void print_errno_message(const char * message);
-
+void mk_errmsg(const char * buffer, char ** error_msg);
+void mk_errno_errmsg(const char * buffer, char ** error_msg);
+char * trim_line_ending(char * buffer);
+char * trim_right(char * buffer);
+char * trim_left(char * buffer);
+char * trim(char * buffer);
 
 /*  Debug macros  */
 
@@ -43,4 +55,4 @@ void print_errno_message(const char * message);
 
 #endif          /*  DEBUG  */
 
-#endif          /*  PG_ECHOSERVER_HELPER_H  */
+#endif          /*  PG_HELPER_H  */

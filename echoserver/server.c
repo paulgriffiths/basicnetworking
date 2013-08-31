@@ -43,6 +43,7 @@ static const int backlog = 1024;
  */
 
 int create_server_socket(const uint16_t listening_port) {
+    char * error_msg;
 
 #ifdef IPV6
     struct sockaddr_in6 server_address;
@@ -53,7 +54,9 @@ int create_server_socket(const uint16_t listening_port) {
 #endif
 
     if ( listening_socket == -1 ) {
-        print_errno_message("Error opening listening socket");
+        mk_errno_errmsg("Error opening listening socket", &error_msg);
+        fprintf(stderr, "%s\n", error_msg);
+        free(error_msg);
         return -1;
     }
 
@@ -71,12 +74,16 @@ int create_server_socket(const uint16_t listening_port) {
 
     if ( bind(listening_socket, (struct sockaddr *) &server_address,
                     sizeof(server_address)) == -1 ) {
-        print_errno_message("Error binding listening socket");
+        mk_errno_errmsg("Error binding listening socket", &error_msg);
+        fprintf(stderr, "%s\n", error_msg);
+        free(error_msg);
         return -1;
     }
 
     if ( listen(listening_socket, backlog) == -1 ) {
-        print_errno_message("Error calling listen()");
+        mk_errno_errmsg("Error calling listen()", &error_msg);
+        fprintf(stderr, "%s\n", error_msg);
+        free(error_msg);
         return -1;
     }
 
@@ -96,6 +103,7 @@ int create_server_socket(const uint16_t listening_port) {
 int start_server(const int listening_socket) {
     ServerTag * server_tag;
     pthread_t thread_id;
+    char * error_msg;
     int failure_code = 0;
     int conn_socket;
 
@@ -104,20 +112,26 @@ int start_server(const int listening_socket) {
                     get_thread_count()));
 
         if ( (conn_socket = accept(listening_socket, NULL, NULL)) == -1 ) {
-            print_errno_message("Error accepting connection");
+            mk_errno_errmsg("Error accepting connection", &error_msg);
+            fprintf(stderr, "%s\n", error_msg);
+            free(error_msg);
             failure_code = EXIT_FAILURE;
             break;
         }
 
         if ( (server_tag = malloc(sizeof(*server_tag))) == NULL ) {
-            print_errno_message("Error allocating server tag");
+            mk_errno_errmsg("Error allocating server tag", &error_msg);
+            fprintf(stderr, "%s\n", error_msg);
+            free(error_msg);
             failure_code = EXIT_FAILURE;
             break;
         }
 
         server_tag->c_socket = conn_socket;
         if ( pthread_create(&thread_id, NULL, echo_server, server_tag) != 0 ) {
-            print_errno_message("Error creating thread");
+            mk_errno_errmsg("Error creating thread", &error_msg);
+            fprintf(stderr, "%s\n", error_msg);
+            free(error_msg);
             free(server_tag);
             failure_code = EXIT_FAILURE;
             break;
@@ -160,16 +174,21 @@ static ThreadCount thread_count = {PTHREAD_MUTEX_INITIALIZER, 0};
 
 int get_thread_count(void) {
     int num_threads;
+    char * error_msg;
 
     if ( pthread_mutex_lock(&thread_count.mutex) != 0 ) {
-        print_errno_message("Couldn't lock thread count mutex");
+        mk_errmsg("Couldn't lock thread count mutex", &error_msg);
+        fprintf(stderr, "%s\n", error_msg);
+        free(error_msg);
         exit(EXIT_FAILURE);
     }
 
     num_threads = thread_count.count;
 
     if ( pthread_mutex_unlock(&thread_count.mutex) != 0 ) {
-        print_errno_message("Couldn't lock thread count mutex");
+        mk_errmsg("Couldn't unlock thread count mutex", &error_msg);
+        fprintf(stderr, "%s\n", error_msg);
+        free(error_msg);
         exit(EXIT_FAILURE);
     }
 
@@ -184,15 +203,21 @@ int get_thread_count(void) {
  */
 
 void increment_thread_count(void) {
+    char * error_msg;
+
     if ( pthread_mutex_lock(&thread_count.mutex) != 0 ) {
-        print_errno_message("Couldn't lock thread count mutex");
+        mk_errmsg("Couldn't lock thread count mutex", &error_msg);
+        fprintf(stderr, "%s\n", error_msg);
+        free(error_msg);
         exit(EXIT_FAILURE);
     }
 
     ++thread_count.count;
 
     if ( pthread_mutex_unlock(&thread_count.mutex) != 0 ) {
-        print_errno_message("Couldn't lock thread count mutex");
+        mk_errmsg("Couldn't lock thread count mutex", &error_msg);
+        fprintf(stderr, "%s\n", error_msg);
+        free(error_msg);
         exit(EXIT_FAILURE);
     }
 }
@@ -205,15 +230,21 @@ void increment_thread_count(void) {
  */
 
 void decrement_thread_count(void) {
+    char * error_msg;
+
     if ( pthread_mutex_lock(&thread_count.mutex) != 0 ) {
-        print_errno_message("Couldn't lock thread count mutex");
+        mk_errmsg("Couldn't lock thread count mutex", &error_msg);
+        fprintf(stderr, "%s\n", error_msg);
+        free(error_msg);
         exit(EXIT_FAILURE);
     }
 
     --thread_count.count;
 
     if ( pthread_mutex_unlock(&thread_count.mutex) != 0 ) {
-        print_errno_message("Couldn't lock thread count mutex");
+        mk_errmsg("Couldn't lock thread count mutex", &error_msg);
+        fprintf(stderr, "%s\n", error_msg);
+        free(error_msg);
         exit(EXIT_FAILURE);
     }
 }

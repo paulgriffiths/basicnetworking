@@ -62,6 +62,7 @@ void * echo_server(void * arg) {
     int c_socket = server_tag->c_socket;
     ssize_t num_read;
     struct timeval time_out;
+    char * error_msg;
 
     /*  Free struct allocated by calling function before we do
         anything that might cause us to exit()                   */
@@ -76,7 +77,9 @@ void * echo_server(void * arg) {
 
     status = pthread_detach(pthread_self());
     if ( status != 0 ) {
-        print_errno_message("Error detaching thread.");
+        mk_errmsg("Error detaching thread", &error_msg);
+        fprintf(stderr, "%s\n", error_msg);
+        free(error_msg);
         exit(EXIT_FAILURE);
     }
 
@@ -91,25 +94,42 @@ void * echo_server(void * arg) {
         time_out.tv_usec = time_out_usecs;
 
         num_read = socket_readline_timeout(c_socket, buffer,
-                MAX_BUFFER_LEN, &time_out);
-
-        if ( num_read == -1 ) {
+                MAX_BUFFER_LEN, &time_out, &error_msg);
+        if ( num_read < 0 ) {
+            fprintf(stderr, "%s\n", error_msg);
+            free(error_msg);
+            exit(EXIT_FAILURE);
+        }
+            
+        if ( num_read == 0 ) {
 
             /*  We've timed out getting a line of input  */
 
             DFPRINTF ((stderr, "No input available.\n"));
-            socket_writeline(c_socket, time_out_msg, strlen(time_out_msg));
+            if ( socket_writeline(c_socket, time_out_msg,
+                    strlen(time_out_msg), &error_msg) < 0 ) {
+                fprintf(stderr, "%s\n", error_msg);
+                free(error_msg);
+                exit(EXIT_FAILURE);
+            }
             break;
         }
 
         /*  Echo the line of input  */
 
         DFPRINTF ((stderr, "Echoing input.\n"));
-        socket_writeline(c_socket, buffer, strlen(buffer));
+        if ( socket_writeline(c_socket, buffer,
+                    strlen(buffer), &error_msg) < 0 ) {
+            fprintf(stderr, "%s\n", error_msg);
+            free(error_msg);
+            exit(EXIT_FAILURE);
+        }
     }
 
     if ( close(c_socket) == - 1 ) {
-        print_errno_message("Error closing socket");
+        mk_errmsg("Error closing socket", &error_msg);
+        fprintf(stderr, "%s\n", error_msg);
+        free(error_msg);
         exit(EXIT_FAILURE);
     }
 

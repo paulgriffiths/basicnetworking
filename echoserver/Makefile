@@ -118,5 +118,5 @@ helper.o: helper.c helper.h
 
 socket_helpers.o: socket_helpers.c socket_helpers.h
 	@echo "Compiling $<..."
-	@$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
 
