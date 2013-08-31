@@ -50,6 +50,10 @@ ssize_t socket_readline(const int socket, char * buffer, const size_t max_len) {
     size_t index;
     ssize_t num_read;
 
+    /*  Fill buffer with 0, to avoid having to add terminating NUL  */
+
+    memset(buffer, 0, max_len);
+
     for ( index = 0; index < (max_len - 1); ++index ) {
 
         /*  Attempt to read one character  */
@@ -64,17 +68,15 @@ ssize_t socket_readline(const int socket, char * buffer, const size_t max_len) {
                  buffer[index] == '\n' &&
                  buffer[index - 1] == '\r' ) {
 
-                /*  End of line, so add terminating NUL and break  */
+                /*  End of line, so break  */
 
-                buffer[++index] = '\0';
                 break;
             }
         } else if ( num_read == 0 ) {
 
             /*  No characters read, but we haven't reached end
-                of line so add terminating NUL and break error  */
+                of line so break                                */
 
-            buffer[index] = '\0';
             break;
         } else if ( errno == EINTR ) {
 
@@ -126,6 +128,10 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
     FD_ZERO(&socket_set);
     FD_SET(socket, &socket_set);
 
+    /*  Attempt to read one character  */
+
+    num_read = read(socket, &buffer[index], 1);
+
     for ( index = 0; index < (max_len - 1); ++index ) {
 
         /*  Wait for input for timeout period  */
@@ -138,7 +144,6 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
 
             /*  No data ready after timeout period  */
 
-            buffer[index] = '\0';
             break;
         }
 
@@ -153,17 +158,15 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
                  buffer[index] == '\n' &&
                  buffer[index - 1] == '\r' ) {
 
-                /*  End of line, so add terminating NUL and break  */
+                /*  End of line, so add break  */
 
-                buffer[++index] = '\0';
                 break;
             }
         } else if ( num_read == 0 ) {
 
             /*  No characters read, but we haven't reached end
-                of line so add terminating NUL and break        */
+                of line so break                                */
 
-            buffer[index] = '\0';
             break;
         } else if ( errno == EINTR ) {
 
