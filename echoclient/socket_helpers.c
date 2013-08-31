@@ -10,17 +10,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <sys/time.h>
-#include <sys/select.h>
 #include <errno.h>
 #include <inttypes.h>
+#include <unistd.h>
 #include <signal.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/select.h>
 #include "socket_helpers.h"
 #include "helper.h"
 
@@ -33,15 +33,15 @@
 
 
 /*!
- * \brief           Reads a \\n terminated line from a socket.
+ * \brief           Reads an `\r\n` terminated line from a socket.
  * \details         The function will not overwrite the buffer, so
  * `max_len` should be the size of the whole buffer, and function will
- * at most write `max_len - 1` characters plus the terminating \\0.
+ * at most write `max_len - 1` characters plus the terminating `\0`.
  * Any terminating CR or LF characters will be stripped.
  * \param socket File description of the socket
  * \param buffer The buffer into which to read
  * \param max_len The maximum number of characters to read, including
- * the terminating \\0.
+ * the terminating `\0`.
  * \returns         The number of characters read, or -1 on encountering
  * an error.
  */
@@ -96,14 +96,14 @@ ssize_t socket_readline(const int socket, char * buffer, const size_t max_len) {
 
 
 /*!
- * \brief           Reads a \\n terminated line from a socket with timeout.
+ * \brief           Reads an `\r\n` terminated line from a socket with timeout.
  * \details         Behaves the same as socket_readline(), except it
  * will time out if no input is available on the socket after the
  * specified time. Any terminating CR or LF characters will be stripped.
  * \param socket File description of the socket
  * \param buffer The buffer into which to read
  * \param max_len The maximum number of characters to read, including
- * the terminating \\0.
+ * the terminating `\0`.
  * \param time_out A pointer to a `timeval` struct containing the timeout
  * period. Note that some implementations of `select()` may alter this
  * variable, so the calling function should consider it unusable after
@@ -333,14 +333,14 @@ int conn_socket_from_string(const char * host, const char * port) {
 
 /*!
  * \brief           Ignores the SIGPIPE signal.
- * \details         The write() system call will, when writing to a closed
- * socket, elicit an RST (reset) flag. A second write() system call will
- * trigger a SIGPIPE signal to be raised. The default action of SIGPIPE
+ * \details         The `write()` system call will, when writing to a closed
+ * socket, elicit an RST (reset) flag. A second `write()` system call will
+ * trigger a `SIGPIPE` signal to be raised. The default action of `SIGPIPE`
  * is to terminate the program, with no error message, which is not
- * desirable. If we want to do anything special when SIGPIPE is triggered,
- * we could set up a handler, but if we don't, then ignoring SIGPIPE is
+ * desirable. If we want to do anything special when `SIGPIPE` is triggered,
+ * we could set up a handler, but if we don't, then ignoring `SIGPIPE` is
  * fine, provided our socket functions respond appropriately to the
- * condition (write() will return EPIPE after an ignored SIGPIPE signal).
+ * condition (`write()` will return `EPIPE` after an ignored `SIGPIPE` signal).
  */
 
 void ignore_sigpipe(void) {

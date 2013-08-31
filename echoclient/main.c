@@ -1,7 +1,6 @@
 /*!
  * \file            main.c
- * \brief           Main function for echoclient.
- * \details         Main function for echoclient.
+ * \brief           Entry point to echoclient.
  * \author          Paul Griffiths
  * \copyright       Copyright 2013 Paul Griffiths. Distributed under the terms
  * of the GNU General Public License. <http://www.gnu.org/licenses/>
@@ -11,11 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
 #include <inttypes.h>
 #include <unistd.h>
 #include "socket_helpers.h"

@@ -53,7 +53,7 @@ void set_errmsg(const char * buffer) {
 
 
 /*!
- * \brief           Sets the global error message based on errno.
+ * \brief           Sets the global error message based on `errno`.
  * \details         Uses a statically allocated buffer, so this is not
  * thread-safe.
  * \param buffer    A buffer containing the error message.
@@ -71,7 +71,7 @@ void set_errno_errmsg(const char * buffer) {
  * function to set an error message.
  * \param buffer    A buffer containing the error message.
  * \param error_msg A pointer to a char pointer which will refer to
- * the error message. This should be free()d by the called.
+ * the error message. This should be free()d by the caller.
  */
 
 void mk_errmsg(const char * buffer, char ** error_msg) {
@@ -93,10 +93,10 @@ void mk_errmsg(const char * buffer, char ** error_msg) {
  * \brief           Makes an error message based on errno.
  * \details         This function provides a thread-safe way for a
  * function to set an error message, with the usual caveat that
- * errno itself is not threadsafe.
+ * `errno` itself is not threadsafe.
  * \param buffer    A buffer containing the error message.
  * \param error_msg A pointer to a char pointer which will refer to
- * the error message. This should be free()d by the called.
+ * the error message. This should be free()d by the caller.
  */
 
 void mk_errno_errmsg(const char * buffer, char ** error_msg) {
