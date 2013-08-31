@@ -225,6 +225,7 @@ ssize_t socket_writeline(const int socket, const char * buffer,
                 num_written = 0;
             } else {
                 set_errno_errmsg("error writing to socket");
+                free(eol_buf);
                 return ERROR_RETURN;
             }
         }
@@ -234,6 +235,7 @@ ssize_t socket_writeline(const int socket, const char * buffer,
         total_written += num_written;
     }
 
+    free(eol_buf);
     return total_written;
 }
 
