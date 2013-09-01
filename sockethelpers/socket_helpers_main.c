@@ -1,6 +1,6 @@
 /*!
- * \file            socket_helpers.c
- * \brief           Implementation of socket helper functions.
+ * \file            socket_helpers_main.c
+ * \brief           Implementation of main socket helper functions.
  * \author          Paul Griffiths
  * \copyright       Copyright 2013 Paul Griffiths. Distributed under the terms
  * of the GNU General Public License. <http://www.gnu.org/licenses/>

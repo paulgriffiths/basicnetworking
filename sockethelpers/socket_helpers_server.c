@@ -1,5 +1,5 @@
 /*!
- * \file            server.c
+ * \file            socket_helpers_server.c
  * \brief           Implementation of server helper functions.
  * \details         Implementation of server helper functions.
  * \author          Paul Griffiths
