@@ -16,6 +16,10 @@
 
 /*  Function prototypes  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 ssize_t socket_readline(const int l_socket, char * buffer,
         const size_t max_len);
 ssize_t socket_readline_timeout(const int l_socket, char * buffer,
@@ -26,5 +30,8 @@ uint16_t port_from_string(const char * port_str);
 int conn_socket_from_string(const char * host, const char * port);
 void ignore_sigpipe(void);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif          /*  PG_SOCKET_HELPERS_H  */
