@@ -18,7 +18,7 @@ OUT=lib$(LIBNAME).a
 INC_INSTALL_PREFIX=paulgrif
 INC_INSTALL_PATH=$(HOME)/include/$(INC_INSTALL_PREFIX)
 LIB_INSTALL_PATH=$(HOME)/lib/c
-INSTALLHEADERS=socket_helpers.h
+INSTALLHEADERS=socket_helpers.h socket_helpers_server.h
 
 # Compiler and archiver executable names
 AR=ar
@@ -36,7 +36,7 @@ C_RELEASE_FLAGS=-O3 -DNDEBUG
 LDFLAGS=
 
 # Object code files
-OBJS=socket_helpers.o
+OBJS=socket_helpers.o server.o
 
 # Source and clean files and globs
 SRCS=$(wildcard *.c *.h)
@@ -118,3 +118,8 @@ main: $(OBJS)
 socket_helpers.o: socket_helpers.c socket_helpers.h
 	@echo "Compiling $<..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
+
+server.o: server.c socket_helpers_server.h
+	@echo "Compiling $<..."
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
