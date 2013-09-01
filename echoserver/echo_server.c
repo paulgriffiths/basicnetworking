@@ -12,9 +12,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <paulgrif/chelpers.h>
 #include "server.h"
 #include "echo_server.h"
-#include "helper.h"
 #include "socket_helpers.h"
 
 

@@ -12,9 +12,9 @@
 #include <string.h>
 #include <pthread.h>
 #include <netinet/in.h>
+#include <paulgrif/chelpers.h>
 #include "server.h"
 #include "echo_server.h"
-#include "helper.h"
 
 
 /*!
