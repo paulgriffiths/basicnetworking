@@ -95,7 +95,7 @@ main: $(OBJS)
 
 # Object files for executable
 
-main.o: main.c socket_helpers.h
+main.o: main.c
 	@echo "Compiling $<..."
 	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
 

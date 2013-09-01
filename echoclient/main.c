@@ -13,7 +13,7 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <paulgrif/chelpers.h>
-#include "socket_helpers.h"
+#include <paulgrif/socket_helpers.h>
 
 
 /*!
