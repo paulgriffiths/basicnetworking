@@ -19,7 +19,7 @@ SAMPLEOUT=sample
 INC_INSTALL_PREFIX=paulgrif
 INC_INSTALL_PATH=$(HOME)/include/$(INC_INSTALL_PREFIX)
 LIB_INSTALL_PATH=$(HOME)/lib/c
-INSTALLHEADERS=
+INSTALLHEADERS=socket_helpers.h
 
 # Compiler and archiver executable names
 AR=ar
@@ -29,7 +29,7 @@ CC=gcc
 ARFLAGS=rcs
 
 # Compiler flags
-CFLAGS=-ansi -pedantic -Wall -Wextra
+CFLAGS=-ansi -pedantic -Wall -Wextra -D_POSIX_C_SOURCE=200112L
 C_DEBUG_FLAGS=-ggdb -DDEBUG -DDEBUG_ALL
 C_RELEASE_FLAGS=-O3 -DNDEBUG
 
@@ -37,12 +37,12 @@ C_RELEASE_FLAGS=-O3 -DNDEBUG
 LDFLAGS=
 
 # Object code files
-OBJS=mainlib.o
+OBJS=socket_helpers.o
 
 # Source and clean files and globs
 SRCS=$(wildcard *.c *.h)
 
-SRCGLOB=*.c *.h
+SRCGLOB=*.c
 
 CLNGLOB=$(OUT) $(SAMPLEOUT)
 CLNGLOB+=*~ *.o *.gcov *.out *.gcda *.gcno
@@ -121,6 +121,6 @@ main.o: main.c
 
 # Object files for library
 
-mainlib.o: mainlib.c mainlib.h
+socket_helpers.o: socket_helpers.c socket_helpers.h
 	@echo "Compiling $<..."
 	@$(CC) $(CFLAGS) -c -o $@ $<
