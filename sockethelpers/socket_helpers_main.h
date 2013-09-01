@@ -10,8 +10,9 @@
 #ifndef PG_SOCKET_HELPERS_MAIN_H
 #define PG_SOCKET_HELPERS_MAIN_H
 
-#include <sys/time.h>
 #include <inttypes.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 
 /*  Function prototypes  */
