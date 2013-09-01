@@ -24,10 +24,10 @@ C_DEBUG_FLAGS=-ggdb -DDEBUG -DDEBUG_ALL
 C_RELEASE_FLAGS=-O3 -DNDEBUG
 
 # Linker flags
-LDFLAGS=-lchelpers
+LDFLAGS=-lchelpers -lsockethelpers
 
 # Object code files
-OBJS=main.o socket_helpers.o
+OBJS=main.o
 
 # Source and clean files and globs
 SRCS=$(wildcard *.c *.h)
@@ -96,10 +96,6 @@ main: $(OBJS)
 # Object files for executable
 
 main.o: main.c socket_helpers.h
-	@echo "Compiling $<..."
-	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
-
-socket_helpers.o: socket_helpers.c socket_helpers.h
 	@echo "Compiling $<..."
 	@$(CC) $(C_UNIX_FLAGS) -c -o $@ $<
 
