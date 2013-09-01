@@ -1,0 +1,13 @@
+# Doxygen configuration file for sockethelpers project
+
+PROJECT_NAME="sockethelpers"
+#PROJECT_BRIEF=""
+OUTPUT_LANGUAGE=English
+OPTIMIZE_OUTPUT_FOR_C=YES
+#EXTRACT_ALL=YES
+#EXTRACT_STATIC=YES
+INPUT=./
+FILE_PATTERNS=*.c *.h
+GENERATE_HTML=YES
+REPEAT_BRIEF=NO
+HAVE_DOT=YES
