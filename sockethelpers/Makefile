@@ -13,7 +13,6 @@
 # Library and executable names
 LIBNAME=sockethelpers
 OUT=lib$(LIBNAME).a
-SAMPLEOUT=sample
 
 # Install paths and header files to deploy
 INC_INSTALL_PREFIX=paulgrif
@@ -44,7 +43,7 @@ SRCS=$(wildcard *.c *.h)
 
 SRCGLOB=*.c
 
-CLNGLOB=$(OUT) $(SAMPLEOUT)
+CLNGLOB=$(OUT)
 CLNGLOB+=*~ *.o *.gcov *.out *.gcda *.gcno
 
 
@@ -63,12 +62,6 @@ debug: main
 release: CFLAGS+=$(C_RELEASE_FLAGS)
 release: main
 
-# tests - builds unit tests
-.PHONY: tests
-tests: CFLAGS+=$(C_TEST_FLAGS)
-tests: LDFLAGS+=$(LD_TEST_FLAGS)
-tests: testmain
-
 # install - installs library and headers
 .PHONY: install
 install:
@@ -80,23 +73,31 @@ install:
 	@cp $(INSTALLHEADERS) $(INC_INSTALL_PATH)
 	@echo "Done."
 
-# sample - makes sample program
-.PHONY: sample
-sample: LDFLAGS+=-l$(LIBNAME)
-sample: main.o
-	@echo "Linking sample program..."
-	@$(CC) -o $(SAMPLEOUT) main.o $(LDFLAGS)
-	@echo "Done."
-
 # clean - removes ancilliary files from working directory
 .PHONY: clean
 clean:
 	-@rm $(CLNGLOB) 2>/dev/null
 
-# lint - runs cpplint with specified options
+# docs - makes Doxygen documentation:
+.PHONY: docs
+docs:
+	@doxygen
+	-@cd latex; make; cd ..
+	@if [ ! -d docs ]; then \
+		mkdir docs; fi
+	@echo "Copying reference manual to docs..."
+	@cp latex/refman.pdf docs 
+	@echo "Done."
+
+# lint - runs splint with specified options
 .PHONY: lint
 lint:
-	@splint $(SRCGLOB)
+	@splint +unix-lib -unrecog $(SRCGLOB)
+
+# linteasy - runs splint with weak checking
+.PHONY: linteasy
+linteasy:
+	@splint -weak +posix-lib -unrecog $(SRCGLOB)
 
 
 # Executable targets section
@@ -111,13 +112,6 @@ main: $(OBJS)
 
 # Object files targets section
 # ============================
-
-# Sample program
-
-main.o: main.c
-	@echo "Compiling $<..."
-	@$(CC) $(CFLAGS) -c -o $@ $<
-
 
 # Object files for library
 
