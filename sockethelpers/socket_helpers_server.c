@@ -88,6 +88,10 @@ int create_tcp_server_socket(const uint16_t listening_port) {
  * \brief           Starts an active server.
  * \details         Connections are passed to a new server thread.
  * \param listening_socket A file descriptor for a listening socket.
+ * \param sfunc     A pointer to a server thread function. The function
+ * should return a pointer to void and accept a single pointer to void
+ * as an argument, which should be interpreted as a pointer to a
+ * `ServerTag` struct.
  * \returns         Returns non-zero on encountering an error. The
  * server runs in an infinite loop, and this function will not return
  * unless an error is countered.
