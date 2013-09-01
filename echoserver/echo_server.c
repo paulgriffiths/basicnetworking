@@ -13,9 +13,10 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <paulgrif/chelpers.h>
-#include "server.h"
-#include "echo_server.h"
+#include <paulgrif/socket_helpers.h>
 #include "socket_helpers.h"
+#include "debug_thread_counter.h"
+#include "echo_server.h"
 
 
 /*!
@@ -93,7 +94,7 @@ void * echo_server(void * arg) {
         time_out.tv_sec = time_out_secs;
         time_out.tv_usec = time_out_usecs;
 
-        num_read = socket_readline_timeout(c_socket, buffer,
+        num_read = socket_readline_timeout_r(c_socket, buffer,
                 MAX_BUFFER_LEN, &time_out, &error_msg);
         if ( num_read < 0 ) {
             fprintf(stderr, "%s\n", error_msg);
@@ -106,7 +107,7 @@ void * echo_server(void * arg) {
             /*  We've timed out getting a line of input  */
 
             DFPRINTF ((stderr, "No input available.\n"));
-            if ( socket_writeline(c_socket, time_out_msg,
+            if ( socket_writeline_r(c_socket, time_out_msg,
                     strlen(time_out_msg), &error_msg) < 0 ) {
                 fprintf(stderr, "%s\n", error_msg);
                 free(error_msg);
@@ -118,7 +119,7 @@ void * echo_server(void * arg) {
         /*  Echo the line of input  */
 
         DFPRINTF ((stderr, "Echoing input.\n"));
-        if ( socket_writeline(c_socket, buffer,
+        if ( socket_writeline_r(c_socket, buffer,
                     strlen(buffer), &error_msg) < 0 ) {
             fprintf(stderr, "%s\n", error_msg);
             free(error_msg);

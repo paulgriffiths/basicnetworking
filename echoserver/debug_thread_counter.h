@@ -1,33 +1,16 @@
 /*!
- * \file            server.h
- * \brief           Interface to listening server functions.
+ * \file            debug_thread_counter.h
+ * \brief           Interface to debug thread counter.
+ * \details         A utility for counting active threads for debugging
+ * purposes.
  * \author          Paul Griffiths
  * \copyright       Copyright 2013 Paul Griffiths. Distributed under the terms
  * of the GNU General Public License. <http://www.gnu.org/licenses/>
  */
 
 
-#ifndef PG_LISTENING_SERVER_H
-#define PG_LISTENING_SERVER_H
-
-#include <inttypes.h>
-
-
-/*!
- * \brief           Struct for passing to server threads.
- * \details         Contains a file descriptor for the connected socket,
- * as the server obviously needs to know this.
- */
-
-typedef struct ServerTag {
-    int c_socket;       /*!< File descriptor for the connected socket */
-} ServerTag;
-
-
-/*  Function prototypes  */
-
-int create_server_socket(const uint16_t listening_port);
-int start_server(const int listening_socket);
+#ifndef PG_DEBUG_THREAD_COUNTER_H
+#define PG_DEBUG_THREAD_COUNTER_H
 
 
 /*  Debugging function prototypes and macros  */
@@ -59,4 +42,4 @@ int get_thread_count(void);
 
 #endif          /*  DEBUG  */
 
-#endif          /*  PG_LISTENING_SERVER_H  */
+#endif          /*  PG_DEBUG_THREAD_COUNTER_H  */

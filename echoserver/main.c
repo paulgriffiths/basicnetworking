@@ -10,7 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
-#include "server.h"
+#include <paulgrif/socket_helpers.h>
+#include "echo_server.h"
 
 
 /*  Function prototypes  */
@@ -33,11 +34,11 @@ int main(int argc, char ** argv) {
         return EXIT_FAILURE;
     }
 
-    if ( (l_socket = create_server_socket(l_port)) == -1 ) {
+    if ( (l_socket = create_tcp_server_socket(l_port)) == -1 ) {
         return EXIT_FAILURE;
     }
 
-    exit_status = start_server(l_socket);
+    exit_status = start_threaded_tcp_server(l_socket, echo_server);
 
     return exit_status;
 }

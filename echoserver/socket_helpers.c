@@ -49,7 +49,7 @@
  * an error.
  */
 
-ssize_t socket_readline(const int socket, char * buffer,
+ssize_t socket_readline_r(const int socket, char * buffer,
         const size_t max_len, char ** error_msg) {
     size_t index;
     ssize_t num_read;
@@ -123,7 +123,7 @@ ssize_t socket_readline(const int socket, char * buffer,
  * an error.
  */
 
-ssize_t socket_readline_timeout(const int socket, char * buffer,
+ssize_t socket_readline_timeout_r(const int socket, char * buffer,
         const size_t max_len, struct timeval * time_out,
         char ** error_msg) {
     ssize_t num_read;
@@ -212,7 +212,7 @@ ssize_t socket_readline_timeout(const int socket, char * buffer,
  * an error.
  */
 
-ssize_t socket_writeline(const int socket, const char * buffer,
+ssize_t socket_writeline_r(const int socket, const char * buffer,
         const size_t max_len, char ** error_msg) {
     size_t num_left = max_len + 2;
     ssize_t num_written, total_written = 0;
@@ -251,124 +251,4 @@ ssize_t socket_writeline(const int socket, const char * buffer,
 
     free(eol_buf);
     return total_written;
-}
-
-
-/*!
- * \brief           Extracts a valid TCP/UDP port from a string.
- * \param port_str  The string from which to extract
- * \returns         The port number on success, or zero if `port_str` does
- * not contain a valid TCP/UDP port (port 0 is reserved and cannot be used).
- */
-
-uint16_t port_from_string(const char * port_str) {
-    unsigned long port_value;
-    char * endptr;
-
-    port_value = strtoul(port_str, &endptr, 10);
-    if ( *endptr != '\0' || port_value < 1 || port_value > 65535 ) {
-        port_value = 0;
-    }
-
-    return (uint16_t) port_value;
-}
-
-
-/*!
- * \brief           Creates a connected sock from a hostname and port.
- * \param host      A string containing the hostname to which to connect.
- * \param port      A string containing the port to which to connect.
- * \param error_msg A pointer to a char pointer which may point to an
- * error message on failure. Set this to NULL to avoid setting an error
- * message.
- * \returns         The file descriptor of the connected socket on success,
- * or -1 on failure.
- */
-
-int conn_socket_from_string(const char * host, const char * port,
-                            char ** error_msg) {
-    struct addrinfo *result_info, *cri;
-    struct addrinfo hints;
-    int status, c_sock, connected = 0;
-
-    /*  Set address info hints prior to calling getaddrinfo()  */
-
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_protocol = 0;
-    hints.ai_flags = AI_CANONNAME;
-
-    /*  Try to get address info  */
-
-    status = getaddrinfo(host, port, &hints, &result_info);
-    if ( status != 0 ) {
-        if ( status == EAI_SYSTEM ) {
-            mk_errno_errmsg("Error getting address info.", error_msg);
-        } else {
-
-            /*  All other getaddrinfo() errors obtainable
-                through gai_strerror()                     */
-
-            char buffer[MAX_BUFFER_SIZE];
-            snprintf(buffer, sizeof(buffer),
-                    "Error getting address info: %d (%s)",
-                    status, gai_strerror(status));
-            mk_errmsg(buffer, error_msg);
-        }
-        return ERROR_RETURN;
-    }
-
-    /*  Create socket and try to connect  */
-
-    for ( cri = result_info; !connected && cri; cri = cri->ai_next ) {
-        struct sockaddr * s_addr = cri->ai_addr;
-
-        if ( (c_sock = socket(s_addr->sa_family, SOCK_STREAM, 0)) != -1 ) {
-            if ( connect(c_sock, s_addr, cri->ai_addrlen) == -1) {
-                if ( close(c_sock) == -1 ) {
-                    mk_errno_errmsg("Couldn't close socket", error_msg);
-                    return ERROR_RETURN;
-                }
-                c_sock = ERROR_RETURN;
-            } else {
-                connected = 1;
-            }
-        }
-    }
-
-    /*  Remember to free the address info we obtained  */
-
-    freeaddrinfo(result_info);
-
-    /*  Set an error message if we couldn't connect to anything  */
-
-    if ( c_sock == ERROR_RETURN ) {
-        mk_errmsg("Unable to connect to service", error_msg);
-    }
-
-    return c_sock;
-}
-
-
-/*!
- * \brief           Ignores the SIGPIPE signal.
- * \details         The write() system call will, when writing to a closed
- * socket, elicit an RST (reset) flag. A second write() system call will
- * trigger a SIGPIPE signal to be raised. The default action of SIGPIPE
- * is to terminate the program, with no error message, which is not
- * desirable. If we want to do anything special when SIGPIPE is triggered,
- * we could set up a handler, but if we don't, then ignoring SIGPIPE is
- * fine, provided our socket functions respond appropriately to the
- * condition (write() will return EPIPE after an ignored SIGPIPE signal).
- */
-
-void ignore_sigpipe(void) {
-    struct sigaction sa;
-
-    sa.sa_handler = SIG_IGN;
-    sa.sa_flags = 0;
-    sigemptyset(&sa.sa_mask);
-
-    sigaction(SIGPIPE, &sa, NULL);
 }
