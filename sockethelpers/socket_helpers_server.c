@@ -91,10 +91,11 @@ int create_tcp_server_socket(const uint16_t listening_port) {
  * \param sfunc     A pointer to a server thread function. The function
  * should return a pointer to void and accept a single pointer to void
  * as an argument, which should be interpreted as a pointer to a
- * `ServerTag` struct.
+ * `ServerTag` struct. The function should `free()` that pointer before
+ * exiting.
  * \returns         Returns non-zero on encountering an error. The
  * server runs in an infinite loop, and this function will not return
- * unless an error is countered.
+ * unless an error is encountered.
  */
 
 int start_threaded_tcp_server(const int listening_socket,
