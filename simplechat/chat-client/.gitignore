@@ -34,3 +34,7 @@ tags
 
 # Backup files
 *~
+
+# Log files
+*.log
+
