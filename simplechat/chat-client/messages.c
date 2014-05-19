@@ -28,7 +28,12 @@ struct known_msg {
     int num_params;         /*!<  The number of parameters the message has  */
 };
 
-/*!  File scope variable to contain a list of supported messages  */
+/*!
+ * \brief   File scope variable to contain a list of supported messages.
+ * \details Later functionality relies on CHAT_MESSAGE_BADMSG, and in
+ * particular the initialization of its `name` as `NULL`, being the last
+ * item in this array.
+ */
 static struct known_msg known_msgs[] = {
     {CHAT_MESSAGE_SAY, "say", 1},
     {CHAT_MESSAGE_TELL, "tell", 2},
