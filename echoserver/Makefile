@@ -22,7 +22,8 @@ C_DEBUG_FLAGS=-ggdb -DDEBUG -DDEBUG_ALL
 C_RELEASE_FLAGS=-O3 -DNDEBUG
 
 # Linker flags
-LDFLAGS=-lpthread -lchelpers -lsockethelpers
+LDFLAGS=-L ~/lib/c
+LDFLAGS+=-lpthread -lchelpers -lsockethelpers
 
 # Object code files
 OBJS=main.o echo_server.o socket_helpers.o debug_thread_counter.o

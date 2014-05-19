@@ -24,7 +24,8 @@ C_DEBUG_FLAGS=-ggdb -DDEBUG -DDEBUG_ALL
 C_RELEASE_FLAGS=-O3 -DNDEBUG
 
 # Linker flags
-LDFLAGS=-lchelpers -lsockethelpers
+LDFLAGS=-L ~/lib/c
+LDFLAGS+=-lchelpers -lsockethelpers
 
 # Object code files
 OBJS=main.o
