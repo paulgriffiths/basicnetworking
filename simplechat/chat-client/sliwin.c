@@ -7,8 +7,12 @@
 #include "win_s.h"
 #include "sliwin.h"
 #include "input_buffer.h"
+#include "logging.h"
 
 #define INPUT_BUFFER_LEN 40
+
+/*!  Constant for ASCII backspace code  */
+static const int ASCII_DEL = 127;
 
 struct sliwin {
     WINDOW * parent_window;
@@ -88,7 +92,7 @@ void sliwin_get_char(struct sliwin * sliwin) {
                 input_buffer_push(sliwin->buffer, c);
             }
         }
-        else if ( c == KEY_BACKSPACE || c == KEY_DC ) {
+        else if ( c == KEY_BACKSPACE || c == KEY_DC || c == ASCII_DEL ) {
             if ( !input_buffer_is_empty(sliwin->buffer) ) {
                 int x, y;
                 getyx(sliwin->window->window, y, x);
@@ -105,6 +109,7 @@ void sliwin_get_char(struct sliwin * sliwin) {
             sliwin_refresh(sliwin);
         }
         else {
+            log_msg("Key pressed was: %d", c);
             assert(false);
         }
         sliwin_refresh(sliwin);
