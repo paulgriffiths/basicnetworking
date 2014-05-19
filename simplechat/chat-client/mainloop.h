@@ -10,6 +10,10 @@
 #ifndef PG_CHAT_CLIENT_MAINLOOP_H
 #define PG_CHAT_CLIENT_MAINLOOP_H
 
+/*!
+ * \brief       Enters and runs main program loop.
+ * \details     Enters and runs main program loop.
+ */
 void chatc_main_loop(void);
 
 #endif      /*  PG_CHAT_CLIENT_MAINLOOP_H  */

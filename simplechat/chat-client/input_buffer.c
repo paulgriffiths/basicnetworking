@@ -1,13 +1,23 @@
+/*!
+ * \file            input_buffer.c
+ * \brief           Implementation of stack-based input buffer.
+ * \details         Implementation of stack-based input buffer.
+ * \author          Paul Griffiths
+ * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include "input_buffer.h"
 
+/*!  Structure to contain an input buffer  */
 struct input_buffer {
-    char * buffer;
-    size_t capacity;
-    size_t top;
+    char * buffer;      /*!<  The text in the input buffer               */
+    size_t capacity;    /*!<  The capacity of the buffer                 */
+    size_t top;         /*!<  The lowest unused character in the buffer  */
 };
 
 struct input_buffer * input_buffer_create(const size_t capacity) {
@@ -63,7 +73,7 @@ void input_buffer_clear(struct input_buffer * buffer) {
     buffer->top = 0;
 }
 
-char * input_buffer_get_buffer(struct input_buffer * buffer) {
+const char * input_buffer_get_buffer(struct input_buffer * buffer) {
     return buffer->buffer;
 }
 

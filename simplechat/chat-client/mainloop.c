@@ -1,7 +1,7 @@
 /*!
- * \file            mainwin.c
- * \brief           Implementation of main window functions.
- * \details         Implementation of main window functions.
+ * \file            mainloop.c
+ * \brief           Implementation of main loop functions.
+ * \details         Implementation of main loop functions.
  * \author          Paul Griffiths
  * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
  * of the GNU General Public License. <http://www.gnu.org/licenses/>
@@ -16,10 +16,14 @@
 #include <assert.h>
 #include <unistd.h>
 #include <sys/select.h>
-#include <sys/ioctl.h>
-#include <curses.h>
 #include "mainwin.h"
 #include "messages.h"
+
+/* NOTE: Currently all this function does is takes messages
+ * from the user and prints them to the message window. This
+ * function will need to be modified once the network functionality
+ * is added.
+ */
 
 void chatc_main_loop(void) {
     bool keep_going = true;
@@ -40,7 +44,7 @@ void chatc_main_loop(void) {
         }
 
         if ( chatc_ui_input_ready() ) {
-            char * text = chatc_ui_retrieve_input();
+            const char * text = chatc_ui_retrieve_input();
             struct chat_msg * msg = chatc_parse_message(text);
             char * fmt;
             char * out;
@@ -94,6 +98,7 @@ void chatc_main_loop(void) {
                     chatc_ui_print_message("[Bad message!]");
                     break;
             }
+
             chatc_ui_message_used();
             chatc_free_message(msg);
         }

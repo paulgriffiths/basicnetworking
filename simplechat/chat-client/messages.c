@@ -1,3 +1,13 @@
+/*!
+ * \file            messages.h
+ * \brief           Implementation of chat protocol message functionality.
+ * \details         Implementation of chat protocol message functionality.
+ * \author          Paul Griffiths
+ * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ */
+
+/*!  POSIX feature test macro  */
 #define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
@@ -11,12 +21,14 @@
 #include "string_functions.h"
 #include "logging.h"
 
+/*!  Structure to contain information about supported messages  */
 struct known_msg {
-    enum chatc_msg msg_id;
-    const char * name;
-    int num_params;
+    enum chatc_msg msg_id;  /*!<  The message id                            */
+    const char * name;      /*!<  A string name for the message             */
+    int num_params;         /*!<  The number of parameters the message has  */
 };
 
+/*!  File scope variable to contain a list of supported messages  */
 static struct known_msg known_msgs[] = {
     {CHAT_MESSAGE_SAY, "say", 1},
     {CHAT_MESSAGE_TELL, "tell", 2},
@@ -25,10 +37,73 @@ static struct known_msg known_msgs[] = {
     {CHAT_MESSAGE_BADMSG, NULL, 0}
 };
 
+/*!
+ * \brief           Gets the next word from input.
+ * \details         Gets the next word from input.
+ * \param input     The input from which to get the next word.
+ * \param buffer    A buffer in which to store the next word. The caller
+ * is responsible for ensuring that this buffer is large enough to contain
+ * the word.
+ * \returns         A pointer to the start of the word *after* the next word
+ * which will be stored in `buffer`. This pointer can be passed as `input`
+ * on a subsequent call to this function, to allow successive words to be
+ * retrieved. `NULL` will be returned if there is no following word,
+ * or if `input` contains no words at all. If there are no words at all,
+ * `buffer` will be set to the empty string, and can be checked to determine
+ * for which of the two possible reasons `NULL` was returned.
+ */
 static const char * get_next_word(const char * input, char * buffer);
+
+/*!
+ * \brief           Translates a message name into a message ID.
+ * \details         Translates a message name into a message ID.
+ * \param msg_name  The message name to translate.
+ * \returns         The message ID corresponding to the message name.
+ * `CHAT_MESSAGE_BADMSG` will be returned if the message name is not
+ * recognized.
+ */
 static enum chatc_msg translate_message_name(const char * msg_name);
+
+/*!
+ * \brief           Creates a dynamically allocated list of strings.
+ * \details         This function dynamically created a list of pointers
+ * to `char` of length `length`. The pointers are set to `NULL`. One more
+ * element than requested is always allocated, which should remain set to
+ * `NULL` to act as a sentinel.
+ * \param length    The number of elements in the list.
+ * \returns         A pointer to the newly created list. The caller is
+ * responsible for `free()`ing this pointer with a call to
+ * `free_string_list()`.
+ */
 static char ** create_string_list(const size_t length);
+
+/*!
+ * \brief           Frees a dynamically allocated list of strings.
+ * \details         This function will `free()` all the elements of
+ * the list until it encounters the *first* element set to `NULL`, and
+ * then `free()` the list itself. The caller is responsible for ensuring
+ * that there are no elements after the first `NULL` which need to be
+ * `free()`d, as this function will not `free()` them.
+ */ 
 static void free_string_list(char ** slist);
+
+/*!
+ * \brief           Parses a list of arguments from a buffer.
+ * \details         Parses a list of arguments from a buffer.
+ * \param buffer    The buffer from which to parse the arguments.
+ * \param num_args  The expected number of arguments.
+ * \param residual  Set to `true` if the last argument should be set to
+ * the entire remainder of the string. All arguments other than the last
+ * can be no more than a single word. Set to `false` to ensure the last
+ * argument is also a single world.
+ * \returns         A pointer to a list of strings containing the arguments.
+ * The caller is responsible for `free()`ing this list by passing it to
+ * `free_string_list()`. `NULL` will be returned if fewer arguments
+ * than `num_args` can be parsed from `buffer()`, or if more arguments
+ * than `num_args` can be parsed and `residual` is not set to `true`. If
+ * residual is set to `true`, then the rest of the line will be set as the
+ * final argument, so there will be no extra arguments by definition.
+ */
 static char ** parse_args(const char * buffer,
                           const size_t num_args,
                           const bool residual);

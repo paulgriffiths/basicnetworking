@@ -1,3 +1,12 @@
+/*!
+ * \file            msgwin.c
+ * \brief           Implementation of message window functions.
+ * \details         Implementation of message window functions.
+ * \author          Paul Griffiths
+ * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ */
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -5,10 +14,11 @@
 #include "win_s.h"
 #include "msgwin.h"
 
+/*!  Structure to hold a message window  */
 struct msgwin {
-    WINDOW * parent_window;
-    WINDOW * border_window;
-    struct win_s * window;
+    WINDOW * parent_window; /*!<  Pointer to parent window                  */
+    WINDOW * border_window; /*!<  Pointer to border window                  */
+    struct win_s * window;  /*!<  Pointer to win_s struct containing window */
 };
 
 struct msgwin * msgwin_create(WINDOW * parent,

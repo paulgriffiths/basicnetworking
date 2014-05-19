@@ -1,3 +1,12 @@
+/*!
+ * \file            sliwin.c
+ * \brief           Implementation of single line input window functions.
+ * \details         Implementation of single line input window functions.
+ * \author          Paul Griffiths
+ * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -9,17 +18,22 @@
 #include "input_buffer.h"
 #include "logging.h"
 
+/*!
+ * \brief       Constant for input buffer length.
+ * \todo        Replace this by calculating from dimensions of window.
+ */
 #define INPUT_BUFFER_LEN 40
 
 /*!  Constant for ASCII backspace code  */
 static const int ASCII_DEL = 127;
 
+/*!  Structure for containing an input window  */
 struct sliwin {
-    WINDOW * parent_window;
-    WINDOW * border_window;
-    struct win_s * window;
-    struct input_buffer * buffer;
-    bool message_ready;
+    WINDOW * parent_window;         /*!<  Pointer to parent window          */
+    WINDOW * border_window;         /*!<  Pointer to border window          */
+    struct win_s * window;          /*!<  Pointer to window struct          */
+    struct input_buffer * buffer;   /*!<  Pointer to the input buffer       */
+    bool message_ready;             /*!<  Message ready flag                */
 };
 
 struct sliwin * sliwin_create(WINDOW * parent,
@@ -125,7 +139,7 @@ void sliwin_message_used(struct sliwin * sliwin) {
     input_buffer_clear(sliwin->buffer);
 }
 
-char * sliwin_get_contents(struct sliwin * sliwin) {
+const char * sliwin_get_contents(struct sliwin * sliwin) {
     return input_buffer_get_buffer(sliwin->buffer);
 }
 

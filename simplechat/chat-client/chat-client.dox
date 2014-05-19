@@ -1,0 +1,6 @@
+/**
+
+\mainpage Simple Chat Client
+
+Simple chat client using TCP/IP and ncurses.
+*/

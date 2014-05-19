@@ -1,7 +1,7 @@
 /*!
- * \file            cc_signals.c
- * \brief           Implementation of TGE signals functions.
- * \details         Implementation of TGE signals functions.
+ * \file            signals.c
+ * \brief           Implementation of signals functions.
+ * \details         Implementation of signals functions.
  * \author          Paul Griffiths
  * \copyright       Copyright 2014 Paul Griffiths. Distributed under the terms
  * of the GNU General Public License. <http://www.gnu.org/licenses/>

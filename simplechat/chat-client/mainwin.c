@@ -27,11 +27,11 @@
  * \brief       Structure for main window
  */
 struct mainwin {
-    WINDOW * window;    /*!<  Pointer to main curses window         */
-    struct winsize ws;  /*!<  Contains dimensions of terminal       */
-    int old_cursor;     /*!<  To store the old cursor               */
-    struct msgwin * msgwin;
-    struct sliwin * inpwin;
+    WINDOW * window;        /*!<  Pointer to main curses window     */
+    struct winsize ws;      /*!<  Contains dimensions of terminal   */
+    int old_cursor;         /*!<  To store the old cursor           */
+    struct msgwin * msgwin; /*!<  Pointer to message window         */
+    struct sliwin * inpwin; /*!<  Pointer to input window           */
 };
 
 /*!  File scope variable to hold main game window  */
@@ -97,7 +97,7 @@ bool chatc_ui_input_ready(void) {
     return sliwin_message_ready(mainwin.inpwin);
 }
 
-char * chatc_ui_retrieve_input(void) {
+const char * chatc_ui_retrieve_input(void) {
     return sliwin_get_contents(mainwin.inpwin);
 }
 
